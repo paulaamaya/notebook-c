@@ -1,3 +1,85 @@
+# Preprocessor
+
+A preprocessor is a text substitution tool that instructs the compiler to do required pre-processing before the actual compilation.  It opperates under the command of directives.
+
+## Macro Substitution
+
+This is the process of replacing an identifier with a certain string in the source code.
+
+### Simple Macros
+
+ ```c
+# define NUMBER (10*10)
+
+// NUMBER gets replaced by 100
+sum = NUMBER * 10;
+
+// macro inside a string does not get replaced
+printf("NUMBER")
+ ```
+
+### Argumented Macros
+
+```c
+#define SQUARE(x) ((x)*(x))
+
+// area gets assigned to (a+b) * (a+b)
+area = SQUARE(a+b)
+```
+
+### Nested Macros
+
+```c
+#define HALF(x) (x/2.0)
+#define QUARTER(x) HALF(HALF(x))
+```
+
+## File Inclusion
+
+```c
+// preprocessor inserts the entire file
+# include "filename.c"
+```
+
+## Compiler Control
+
+This is particularly useful when we want the comiler to "skip" certain lines of code, i.e. **conditional compilation**.
+
+*Scenario 1:* Ensure macros are defined and deactivate some macros in an imported file.
+
+```c
+#include "myheader.h"
+// defines MESSAGE iff not already defined in myheader.c
+#ifndef MESSAGE
+    # define MESSAGE "You wish!"
+#endif
+// ensure we never have RUDE defined
+# ifdef RUDE
+    #ndef RUDE
+#endif
+```
+
+*Scenario 2:* Run different code depending on payment type.
+
+```c
+int PaymentMethod(){
+    ...
+    #if defined(CASH)
+        cash();
+    #elif defined(DEBIT) || defined(CREDIT)
+        interac();
+    #else
+        printerror();
+    #endif
+    ...
+}
+```
+Notice that we can use compile control directives in-code and use of the ```defined(macro)``` operator in conditional compiling.
+
+# Basics
+
+
+
 # Vscode Set Up
 
 To use most IDEs you will have to configure the compiler path, tell the IDE how to build, and specify a debugger if you wish.
