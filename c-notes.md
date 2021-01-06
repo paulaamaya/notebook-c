@@ -15,7 +15,7 @@ This is the process of replacing an identifier with a certain string in the sour
 sum = NUMBER * 10;
 
 // macro inside a string does not get replaced
-printf("NUMBER")
+printf("%d", NUMBER)
  ```
 
 ### Argumented Macros
@@ -37,8 +37,10 @@ area = SQUARE(a+b)
 ## File Inclusion
 
 ```c
-// preprocessor inserts the entire file
-# include "filename.c"
+// lookf for file in std system directory
+#include <library.h>
+// looks for file in current directory
+#include "filename.h"
 ```
 
 ## Compiler Control
@@ -62,7 +64,7 @@ This is particularly useful when we want the comiler to "skip" certain lines of 
 *Scenario 2:* Run different code depending on payment type.
 
 ```c
-int PaymentMethod(){
+int paymentMethod(){
     ...
     #if defined(CASH)
         cash();
@@ -78,6 +80,112 @@ Notice that we can use compile control directives in-code and use of the ```defi
 
 # Basics
 
+## User I/O
+
+```printf()``` is used to print a formatted string.  Its first argument should be a atring literal and, if needed, any values of another type.
+
+```c
+#include <stdio.h>
+int main()
+{
+    float number1 = 13.5;
+
+    printf("literal string");
+    printf("number1 = %f\n", number1);
+    return 0;
+}
+```
+
+```scanf()``` reads formatted input.  Its first argument should be a atring literal specifying what kind of input we expect and the second is the memory address of where to store the value.
+
+```c
+#include <stdio.h>
+int main()
+{
+    int a;
+    printf("Enter an integer: ");
+    scanf("%d", &a);
+    return 0;
+}
+```
+
+You do not need ```&``` if you are reading a string as an array of chars.
+
+## Enums
+
+Data type that allows you to define a variable and specify the valid values that could be stored in it.
+
+```c  
+int main() 
+{ 
+    // define enum type
+    enum weekday {Mon, Tue, Wed, Thur, Fri, Sat, Sun};
+
+    // declare a variable of type enum 
+    enum weekday today = Wed; 
+
+    // prints out value of enumeration, i.e. 2
+    printf("%d",day); 
+
+    // can loop through well-ordered enums
+    int i; 
+    for (i=Jan; i<=Dec; i++)       
+        printf("%d ", i); 
+
+    return 0; 
+} 
+```
+
+Enum names are assigned to a number, the default is "index" number.  But we can also specify the number of enum names.
+
+```c
+int main(){
+
+    enum state {working = 1, failed = 0};
+    enum state myCarState = working;
+
+    // prints out 1
+    printf("d%", myCarState);
+
+    return 0;
+}
+```
+
+1. Two enum names can have same value
+```c
+int main(){
+
+    enum state {working = 1, failed = 0, frozen = 0};
+
+    // prints out 1 0 0
+    printf("%d, %d, %d", working, failed, frozen)
+
+    return 0;
+}
+```
+2. We can assign values to some name in any order. All unassigned names get value as value of previous name plus one.
+```c
+int main(){
+
+    enum state {apple = 1, orange = 5, grapefruit};
+
+    // prints out 1 5 6
+    printf("%d, %d, %d", apple, orange, grapefruit)
+
+    return 0;
+}
+```
+3. All enum names must be unique in their scope. 
+```c
+int main(){
+
+    // Compile Error: 'failed' has a previous declaration as 'state failed'
+    enum state {working, failed};
+    enum result {passed, failed};
+
+    return 0;
+}
+```
 
 
 # Vscode Set Up
