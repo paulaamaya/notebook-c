@@ -4,6 +4,7 @@
     - [Boolean](#boolean)
     - [Enumeration](#enumeration)
   - [Increment/Decrement Operators](#incrementdecrement-operators)
+  - [Bitwise Operators](#bitwise-operators)
 
 
 # Basics
@@ -120,6 +121,93 @@ void squeeze(char s[], char c){
     s[j] = '\0';
 }
 ```
+
+## Bitwise Operators
+
+In the arithmetic-logic unit of the machine mathematical operations are done in bit-level. C provides six operators for for bit manipulation; these can only be applied to integral operands `char`, `short`, `int`, and `long` whether signed or unsigned.
+
+**AND**
+
+The output of bitwise `&` is 1 if the corresponding bits of two operands is 1. If either bit of an operand is 0, the result of corresponding bit is evaluated to 0. Consider the bitwise `&` operation of two integers 12 and 25:
+
+```
+12 = 00001100 (In Binary)
+25 = 00011001 (In Binary)
+
+Bit Operation of 12 and 25
+  00001100
+& 00011001
+  ________
+  00001000  = 8 (In decimal)
+```
+
+As you can see from this example, the `&` operator can be used to mask off some set of bits (where all the bits set to `0` in one argument will be turned off).
+
+**OR**
+
+The output of bitwise `|` is 1 if at least one corresponding bit of two operands is 1.
+
+```
+12 = 00001100 (In Binary)
+25 = 00011001 (In Binary)
+
+Bitwise OR Operation of 12 and 25
+  00001100
+| 00011001
+  ________
+  00011101  = 29 (In decimal)
+```
+
+The `|` operator can be used to to turn on bits (where all the bits set to `1` in one argument will be turned on).
+
+**XOR**
+
+The result of bitwise `^` operator is 1 if the corresponding bits of two operands are opposite and 0 if the bits are the same.
+
+```
+12 = 00001100 (In Binary)
+25 = 00011001 (In Binary)
+
+Bitwise XOR Operation of 12 and 25
+  00001100
+^ 00011001
+  ________
+  00010101  = 21 (In decimal)
+```
+
+**COMPLEMENT**
+
+The bitwise complement operator is a unary operator that negates each bit, i.e. changes 0 to 1 and 1 to 0.
+
+```
+35 = 00100011 (In Binary)
+
+Bitwise complement Operation of 35
+~ 00100011 
+  ________
+  11011100  = 220 (In decimal)
+```
+
+More on this later...
+
+**SHIFT**
+
+The right shift `>>` and left shift `<<` operators perform bit shift of their left operand by the number of poisitions in the right operand.
+
+```
+212 = 11010100 (In binary)
+212 >> 2 = 00110101 (In binary)
+212 >> 7 = 00000001 (In binary)
+212 >> 8 = 00000000 
+212 >> 0 = 11010100 (No Shift)
+
+212 = 11010100 (In binary)
+212<<1 = 110101000 (In binary)
+212<<0 = 11010100 (Shift by 0)
+212<<4 = 110101000000 (In binary)
+```
+
+
 
 
 
