@@ -4,10 +4,11 @@ void squeeze(char s1[], char s2[]);
 int isCharInString(char c, char s[]);
 
 main(){
-    char s1[30], s2[30];
 
-    printf("Enter a string and another string to substract: ");
-    scanf("%s %c", &s1, &s2);
+    char s1[30], s2[30];
+    
+    printf("Enter two strings separated by a space: ");
+    scanf("%s %s", &s1, &s2);
 
     squeeze(s1, s2);
 
