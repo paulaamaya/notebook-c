@@ -1,18 +1,27 @@
 - [Introduction](#introduction)
   - [Variables](#variables)
+  - [Printing](#printing)
+  - [Symbolic Constants](#symbolic-constants)
 - [Types, Operators, and Expressions](#types-operators-and-expressions)
   - [Boolean](#boolean)
   - [Enumeration](#enumeration)
   - [Increment/Decrement Operators](#incrementdecrement-operators)
   - [Bitwise Operators](#bitwise-operators)
   - [Precedence \& Order of Evaluation](#precedence--order-of-evaluation)
+- [Control Flow](#control-flow)
+  - [`switch`](#switch)
+  - [`do-while`](#do-while)
+- [Functions and Program Structure](#functions-and-program-structure)
+  - [Functions](#functions)
 
 
 # Introduction
 
+To compile individual files in C use the command `gcc filename.c -o filename.exe`. Then run the program by calling the executable with `./filename.exe`.
+
 ## Variables
 
-All variables must be declared before use.  A declaration specifies a type and a list of 1+ variable names of that type.  Note that a variable can be declared prior to being assigned a value.
+All variables must be declared before use.  A declaration specifies a type and a list of variables of that type.  Note that a variable can be declared prior to being assigned a value.
 
 ```c
 int lower, upper, step;
@@ -27,6 +36,23 @@ float eps = 1.0e-5;
 ```
 
 The qualifier `const` can be applied to the declaration of any variable to specify that its value will not be changed.
+
+## Printing
+To output values or print text in C, you can use the `printf()` function.  This function allows for the formatting of strings using conversion specifiers.  Format strings specify notation, alignment, significant digits, field width, and other aspects of output formats.
+
+```C
+int a = 0;
+float b = 21.756;
+
+printf("The value of a is %d.  The value of b is %f", a, b);
+```
+
+## Symbolic Constants
+It is bad practice to bury important constants inside a program.  One way to deal with these constants is to give them names.  A `#define` line defines a symbolic constant to be a particular string of characters:
+
+```C
+#define PI 3.14159
+```
 
 # Types, Operators, and Expressions
 
@@ -56,8 +82,9 @@ Range of signed char: -128 to 127
 Range of unsigned char: 0 to 255
 ```
 
-The value of an integer can be specified in octal or hexadecimal instead of decimal:
-- A leading `0` on an integer constant means octal (e.g. `31 == 037`)
+The value of an integer can be specified in binary, octal or hexadecimal instead of decimal:
+- A leading `0b` on an integer constant means binary representation. (e.g. `37 == 0b100101`)
+- A leading `0` on an integer constant means octal representation. (e.g. `31 == 037`)
 - A leading `0X` means hexadecimal (e.g `31 == 0X1f`)
 - These can also be followed by `L` to make them `long` and `U` to make them `unsigned` (e.g. 15 == `0XFUL` is an `unsigned long` constant)
 
@@ -67,26 +94,45 @@ In C, the `bool` data type is not a built-in data type and you must import `#inc
 - `0` represents `false`
 
 ```C
-// Create boolean variables
 bool isProgrammingFun = true;
 bool isFishTasty = false;
 
-// Return boolean values
-printf("%d", isProgrammingFun);   // Returns 1 (true)
-printf("%d", isFishTasty);        // Returns 0 (false)
+printf("%d", isProgrammingFun);   
+// Returns 1 (true)
+printf("%d", isFishTasty);        
+// Returns 0 (false)
 ```
 
 ## Enumeration
 
-Enumerations provide a convenient way to associate constant values with names, an alternative to `#define` with the advantage that values can be generated for you. 
+Enumerations are a user-defined type of named integers. They provide a convenient way to associate integers with names, an alternative to `#define`.  Furthermore, they have the advantage that values can be generated for you automatically.
 
 ```C
-enum daysOfWeek1 {sun, mon, tue, wed, thu, fri, sat};
-// sun=0, mon=1, tue=2,...
+enum day1 {MON, TUE, WED, THU, FRI, SAT, SUN};
+// mon=0, tue=1, wed=2,...
 
-enum daysOfWeek2 {sun=1, mon, tue, wed, thu, fri, sat};
-// sun=1, mon=2, tue=3,...
+enum day2 {MON = 1, TUE, WED, THU, FRI, SAT, SUN};
+// mon=1, tue=2, wed=3, ...
+
+int main(){
+  ...
+}
 ```
+
+The first name in an `enum` value has value 0 by default, unless explicit values are specified.  If not all values are specified, unspecified values continue the progression from the last specified value, as in the second example above.
+
+Enums are a user-defined data type so **to actually used an enum class you need to instantiate an object of said type**. 
+
+```C
+
+int main(){
+    enum day2 launch_date = MON;
+    printf("%d", launch_date);
+    // 1
+}
+```
+
+Since enums are used in a similar way to symbolic constants, **identifier names in different enumerations must be distinct**.  However, values (even within the same enumeration) need not be distinct.
 
 ## Increment/Decrement Operators
 
@@ -246,6 +292,46 @@ printf("%d %d\n", n, power(2,n));
 
 The moral is that writing code that depends on order of evaluation is a bad programming practice in any language.  Naturally, it is necessary to know which things to avoid but as a rule of thumb leave no ambiguity for the compiler.
 
+# Control Flow
+
+## `switch`
+The `switch` statement is a multi-way decision that tests whether an expression matches one of a number of *constant* integer values.  Each case is labeled by at least one integer-valued constant or constant expressions.  Cases can be stacked so as to re-use code:
+
+```C
+int main(){
+    int a = 10;
+
+    switch (a)
+    {
+        case 0: case 2: case 14:
+            printf("Not a valid id.");
+        case 1: case 3: case 4:
+            printf("You do not have clearance.");
+        default:
+            printf("Access granted.");
+            break;
+    }
+    return 0;
+}
+```
+
+Because cases serve just as labels, after the code for one case is done, execution immediately falls through to the next case unless you take explicit action to explain. The `break` statement causes an immediate exit from the `switch`.
+
+Falling through cases is both a blessing and a curse.  On the positive side, it allows serveral cases to be attached to a single action.  On the negative, normally each case must end with a `break` to prevent falling through to the next.
+
+## `do-while`
+
+The `while` and `for` loops test the termination condition at the top.  By contrast the `do-while` loop tests the condition after running the body of the loop at least once.
+
+```C
+do{
+  ...
+} while (...);
+```
+
+# Functions and Program Structure
+
+## Functions
 
 
 
