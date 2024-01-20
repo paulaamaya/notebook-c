@@ -1,13 +1,14 @@
-- [Basics](#basics)
+- [Introduction](#introduction)
   - [Variables](#variables)
-  - [Data Types](#data-types)
-    - [Boolean](#boolean)
-    - [Enumeration](#enumeration)
+- [Types, Operators, and Expressions](#types-operators-and-expressions)
+  - [Boolean](#boolean)
+  - [Enumeration](#enumeration)
   - [Increment/Decrement Operators](#incrementdecrement-operators)
   - [Bitwise Operators](#bitwise-operators)
+  - [Precedence \& Order of Evaluation](#precedence--order-of-evaluation)
 
 
-# Basics
+# Introduction
 
 ## Variables
 
@@ -27,7 +28,7 @@ float eps = 1.0e-5;
 
 The qualifier `const` can be applied to the declaration of any variable to specify that its value will not be changed.
 
-## Data Types
+# Types, Operators, and Expressions
 
 There are only a few basic data types in C.  As mentioned in the [variables](#variables) section, every variable must be a specified data type.  Additionally, when printing using the `printf()` function, you must use a format specifier to display it.
 
@@ -60,7 +61,7 @@ The value of an integer can be specified in octal or hexadecimal instead of deci
 - A leading `0X` means hexadecimal (e.g `31 == 0X1f`)
 - These can also be followed by `L` to make them `long` and `U` to make them `unsigned` (e.g. 15 == `0XFUL` is an `unsigned long` constant)
 
-### Boolean
+## Boolean
 In C, the `bool` data type is not a built-in data type and you must import `#include <stdbool.h>` to use it.  Boolean values are returned as integers having binary values.  Therefore you need to use the `%d` format specifier to print them.
 - `1` (or any non-zero number) represents `true`
 - `0` represents `false`
@@ -75,7 +76,7 @@ printf("%d", isProgrammingFun);   // Returns 1 (true)
 printf("%d", isFishTasty);        // Returns 0 (false)
 ```
 
-### Enumeration
+## Enumeration
 
 Enumerations provide a convenient way to associate constant values with names, an alternative to `#define` with the advantage that values can be generated for you. 
 
@@ -206,6 +207,44 @@ The right shift `>>` and left shift `<<` operators perform bit shift of their le
 212<<0 = 11010100 (Shift by 0)
 212<<4 = 110101000000 (In binary)
 ```
+## Precedence & Order of Evaluation
+
+For a full list of operator precedence read [this article](https://www.geeksforgeeks.org/operator-precedence-and-associativity-in-c/) which goes into the topic in-depth. 
+
+For instance, notice that the precedence of bitwise operators `&`, `^`, and `|` falls below `==` and `!=`. Therefore, bit-testing expressions such as the one below must be parenthesized to give proper results.
+
+```C
+if ((x & mask) == 0) ...
+```
+C, like most languages, **does not specify the order in which the operands of an operator are calculated**. (Except for `&&`, `||`, `?:`, and `,`)
+
+```C
+x = f() + g()
+```
+
+So in a statement like the one above `f` may be evaluated before `g` or vice-versa.  Thus if either `f` or `g` alters a variable upon which both functions depend, `x` can yield different values depending on the order of evaluation.  When two function are dependent on a common variable, it is advisable to store intermediate results in temporary variables to ensure a particular sequence.
+
+Another example is the seemingly simple statement,
+
+```C
+a[i] = i++
+```
+where the question is whether the index is the old value of `i` or the incremented one.  The unfortunate answer is that it depends on the compiler.
+
+Similarly, **the order in which function arguments are evaluated is not specified**.  For example, the statement below can produce different results with different compilers, depending on whether `n` is incremented before `power` is called.
+
+```C
+printf("%d %d\n", ++n, power(2,n));
+```
+
+The way to fix this is to write:
+
+```C
+n++;
+printf("%d %d\n", n, power(2,n));
+```
+
+The moral is that writing code that depends on order of evaluation is a bad programming practice in any language.  Naturally, it is necessary to know which things to avoid but as a rule of thumb leave no ambiguity for the compiler.
 
 
 
