@@ -13,6 +13,14 @@
   - [`do-while`](#do-while)
 - [Functions and Program Structure](#functions-and-program-structure)
   - [Functions](#functions)
+  - [Scope Rules](#scope-rules)
+  - [Static Variables](#static-variables)
+  - [Register Variables](#register-variables)
+  - [Initialization](#initialization)
+  - [The C Preprocessor](#the-c-preprocessor)
+    - [Macro Substitution](#macro-substitution)
+    - [File Inclusion](#file-inclusion)
+    - [Compiler Control](#compiler-control)
 
 
 # Introduction
@@ -332,6 +340,184 @@ do{
 # Functions and Program Structure
 
 ## Functions
+
+The general form of a function definition is as follows:
+
+```C
+return_type function_name(param_list) {
+  body;
+}
+```
+
+The parameter list refers to the type, order, and number of parameters of the function.  
+
+A *function declaration* is exacly as above, minus the body.  This tells the compiler about a function name and how to call the function.  **Function declaration is required when you define a function in one source file and you call that function in another file.** In such case, you should declare the function at the top of the file calling the function.  For example,
+
+```C
+int max(int a, int b){
+  int result;
+}
+```
+
+## Scope Rules
+
+If an external variable is to be referred to before it is defined, or if it is defined in a different source file, then an `extern` declaration is mandatory.  It is important to distinguish between a *declaration* - announces the properties of a variable (primarily its type) - and a *definition* which causes storage to be set aside.  
+
+```C
+// Declare the variable.
+// Causes storage to be set aside.
+int a;
+double val[10]
+
+// Declare the variable.
+// Does not set aside storage.
+extern int a;
+extern double val[];
+```
+
+There must be only one definition of a variable among all the files that make up the source program; other files may only contain `extern` declarations to access it.  Likewise, initialization of an external variable goes only with the definition.  Array sizes must be specified with the definition, but are optional with an extern declaration.
+
+## Static Variables
+
+Sometimes you want variables/functions to be of private use for the functions in their respective source file, and not accessed by other source files even when imported.  The `static` declaration, applied to a variable or function, limits the scope of that object to the rest of the source file being compiled.
+
+Static storage is specified by prefixing a declaration with the word `static`.  If a variable/function is declared static, its name is invisible outside of the file where it is declared.
+
+```C
+static int local_freq = 60;
+```
+
+The `static` declaration can also be applied to variables within a function.  What is the difference between this and a regular variable declared within a function?  Internal `static` variables are also local to a particular function, but unlike automatic variables, they remain in existence rather than coming each time the function is activated.  **This means `static` variables in a function provide private, permanent storage within a single function.**  Furthermore, `static` variables are only initialized the first time time the block is entered.
+
+For example in the program below, the `counter` variable `print_int` will keep track of how many times the function was ran.  This `counter` variable does not get thrown out everytime `print_int` executes, but seves as storage for the function.
+
+```C
+void print_int(int num) {
+    static int counter = 0;
+    printf("Printing....%d\n", num);
+    counter++;
+    printf("For the %dth time.\n", counter);
+}
+
+int main(){
+    for (int i = 0; i < 10; i++)
+    {
+        print_int(5);
+    }
+}
+```
+
+## Register Variables
+
+A `register` declaration advises the compiler that the variable in question will be heavily used.  These variables are to be placed in machine registers, which may result in smaller and faster programs.  **Register variables can not be made global, but only local to functions or their parameters.**
+
+```C
+return_type function(register unsigned m, register long n){
+  register int i;
+}
+```
+
+- The decision to actually put the variable in a register is essentially up to the compiler.  Therefore, there is technically no harm in excess `register` variable declarations.  It is, however, not recommended.
+- Only a few variables in each function may be kept in registers, and only certain types are allowed.  These vary from machine to machine.
+- It is not possible to take the address of a register variable, reagrdless of whether the variable is actually placed in a register or not.
+
+## Initialization 
+
+In the absence of explicit initialization, global (external) and static variables are guaranteed to be initialized to zero; function (automatic) and register variables have undefined intial values.
+
+For external and static values, the initializer must be a constant expression; the initialization is done once.  For automatic and register variables, the initializer is not restricted to being a constant; it may be any expression involving previously defined values, even function calls.
+
+An array may be initialized by following its declaration with a list of initial values enclosed in braces.  For example:
+
+```C
+int days[] = {1, 2, 3, 4, 5, 6, 7}
+```
+
+- When the size of the array is omitted, the compiler will compute the length by counting the initial values.
+- If there are fewer initializers for an array than the number specified, the missing elements will be zero for global, static, and automatic variables.
+- Having more initializers for an array than the number specified will produce and error. 
+
+
+## The C Preprocessor
+
+A preprocessor is a text substitution tool that instructs the compiler to do required pre-processing before the actual compilation.  It opperates under the command of directives.
+
+
+### Macro Substitution
+
+This is the process of replacing an identifier with a certain string in the source code.
+
+**Simple Macros**
+
+ ```c
+# define NUMBER (10*10)
+
+// NUMBER gets replaced by 100
+sum = NUMBER * 10;
+
+// macro inside a string does not get replaced
+printf("%d", NUMBER)
+ ```
+
+**Argumented Macros**
+
+```c
+#define SQUARE(x) ((x)*(x))
+
+// area gets assigned to (a+b) * (a+b)
+area = SQUARE(a+b)
+```
+
+**Nested Macros**
+
+```c
+#define HALF(x) (x/2.0)
+#define QUARTER(x) HALF(HALF(x))
+```
+
+### File Inclusion
+
+```c
+// look for file in std system directory
+#include <library.h>
+// looks for file in current directory
+#include "filename.h"
+```
+
+### Compiler Control
+
+This is particularly useful when we want the compiler to "skip" certain lines of code, i.e. **conditional compilation**.
+
+*Scenario 1:* Ensure macros are defined and deactivate some macros in an imported file.
+
+```c
+#include "myheader.h"
+// defines MESSAGE iff not already defined in myheader.h
+#ifndef MESSAGE
+    # define MESSAGE "You wish!"
+#endif
+// ensure we never have RUDE defined
+# ifdef RUDE
+    #ndef RUDE
+#endif
+```
+
+*Scenario 2:* Run different code depending on payment type.
+
+```c
+int paymentMethod(){
+    ...
+    #if defined(CASH)
+        cash();
+    #elif defined(DEBIT) || defined(CREDIT)
+        interac();
+    #else
+        printerror();
+    #endif
+    ...
+}
+```
+Notice that we can use compile control directives in-code and use of the ```defined(macro)``` operator in conditional compiling.
 
 
 
